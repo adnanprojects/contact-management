@@ -1,15 +1,23 @@
+const Contact = require('../models/contactModel');
+
 // @desc Get all contacts
 // @route GET api/contacts
 // @access public
 const getContacts = async (request, response) => {
-    await response.json({ message: 'Got all contacts' });
+    const contact = await Contact.find();
+    await response.json(contact);
 }
 
 // @desc get a contact
 // @route GET api/contacts/id
 // @access public
 const getContact = async (request, response) => {
-    await response.json({ message: `Got contact for id ${request.params.id}` });
+    const contact = await Contact.findById(request.params.id);
+    if (!contact) {
+        response.status(404);
+        throw new Error('Contact not found');
+    }
+    await response.json(contact);
 }
 
 // @desc Create a contact
@@ -22,7 +30,8 @@ const createContact = async (request, response) => {
         await response.status(400);
         throw new Error('All fields are mandatory');
     }
-    await response.json({ message: `create a new contact` });
+    const contact = Contact.create({ name, email, phone });
+    await response.json(contact);
 }
 
 // @desc Update a contact

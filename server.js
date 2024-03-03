@@ -2,11 +2,14 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const router = require('./routes/contactRoutes');
 const errorHandler = require('./middleware/errorHandler');
+const connectDB = require('./config/dbConnection');
 
 // App
 const app = express();
 
 const port = process.env.PORT || 5000;
+
+connectDB();
 
 // MiddleWare
 app.use(express.json());
