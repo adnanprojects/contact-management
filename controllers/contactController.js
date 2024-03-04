@@ -12,6 +12,7 @@ const getContacts = async (request, response) => {
 // @route GET api/contacts/id
 // @access public
 const getContact = async (request, response) => {
+    // const contact = await Contact.findById(request.params.id);
     const contact = await Contact.findById(request.params.id);
     if (!contact) {
         response.status(404);
@@ -24,7 +25,6 @@ const getContact = async (request, response) => {
 // @route POST api/contacts
 // @access public
 const createContact = async (request, response) => {
-    console.log(request.body);
     const { name, email, phone } = request.body;
     if (!name || !email || !phone) {
         await response.status(400);
@@ -38,7 +38,20 @@ const createContact = async (request, response) => {
 // @route PUT api/contacts/id
 // @access public
 const updateContact = async (request, response) => {
-    await response.json({ message: `update contact for id ${request.params.id}` });
+    const contact = await Contact.findById(request.params.id);
+    if (!contact) {
+        response.status(404);
+        throw new Error('Contact not found');
+    }
+    const id = request.params.id;
+    const body = request.body;
+    const updatedContact = Contact.findByIdAndUpdate(
+        id,
+        body,
+        { new: true }
+    );
+    console.log(updatedContact._update)
+    await response.json(updatedContact._update);
 }
 
 // @desc Delete a contact
