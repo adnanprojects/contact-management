@@ -12,7 +12,6 @@ const getContacts = async (request, response) => {
 // @route GET api/contacts/id
 // @access public
 const getContact = async (request, response) => {
-    // const contact = await Contact.findById(request.params.id);
     const contact = await Contact.findById(request.params.id);
     if (!contact) {
         response.status(404);
@@ -51,14 +50,20 @@ const updateContact = async (request, response) => {
         { new: true }
     );
     console.log(updatedContact._update)
-    await response.json(updatedContact._update);
+    response.status(200).json(updatedContact._update);
 }
 
 // @desc Delete a contact
 // @route DELETE api/contacts/id
 // @access public
 const deleteContact = async (request, response) => {
-    await response.json({ message: `Deleted contact for id ${request.params.id}` });
+    const contact = await Contact.findById(request.params.id);
+    if (!contact) {
+        response.status(404);
+        throw new Error('Contact not found');
+    }
+    await Contact.deleteOne();
+    await response.json(contact);
 }
 
 module.exports = {
