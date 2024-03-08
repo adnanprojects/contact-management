@@ -45,8 +45,14 @@ const loginUser = async (request, response) => {
     }
     const user = User.findOne({ email });
     if (user && bcrypt.compare(password, user.password)) {
-        const accessToken =
-            response.status(200).json({ accessToken });
+        const accessToken = jwt.sign({
+            user: {
+                username: user.username,
+                email: user.email,
+                id: user.id,
+            }
+        }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+        response.status(200).json({ accessToken });
     }
     await response.json({ message: 'Login the user' });
 }
