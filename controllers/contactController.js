@@ -2,7 +2,7 @@ const Contact = require('../models/contactModel');
 
 // @desc Get all contacts
 // @route GET api/contacts
-// @access public
+// @access private
 const getContacts = async (request, response) => {
     const contact = await Contact.find();
     await response.json(contact);
@@ -10,7 +10,7 @@ const getContacts = async (request, response) => {
 
 // @desc get a contact
 // @route GET api/contacts/id
-// @access public
+// @access private
 const getContact = async (request, response) => {
     const contact = await Contact.findById(request.params.id);
     if (!contact) {
@@ -22,20 +22,20 @@ const getContact = async (request, response) => {
 
 // @desc Create a contact
 // @route POST api/contacts
-// @access public
+// @access private
 const createContact = async (request, response) => {
     const { name, email, phone } = request.body;
     if (!name || !email || !phone) {
         await response.status(400);
         throw new Error('All fields are mandatory');
     }
-    const contact = Contact.create({ name, email, phone });
+    const contact = Contact.create({ name, email, phone, user_id: request.user.id });
     await response.json(contact);
 }
 
 // @desc Update a contact
 // @route PUT api/contacts/id
-// @access public
+// @access private
 const updateContact = async (request, response) => {
     const contact = await Contact.findById(request.params.id);
     if (!contact) {
@@ -55,14 +55,14 @@ const updateContact = async (request, response) => {
 
 // @desc Delete a contact
 // @route DELETE api/contacts/id
-// @access public
+// @access private
 const deleteContact = async (request, response) => {
     const contact = await Contact.findById(request.params.id);
     if (!contact) {
         response.status(404);
         throw new Error('Contact not found');
     }
-    await Contact.deleteOne();
+    await Contact.deleteOne({ _id: request.params.id });
     await response.json(contact);
 }
 

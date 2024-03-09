@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt')
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
@@ -31,6 +31,7 @@ const registerUser = async (request, response) => {
         response.status(400);
         throw new Error('User data is not valid');
     }
+    // response.json({ message: 'Register the user' });
 }
 
 // @desc Login a user
@@ -42,42 +43,29 @@ const loginUser = async (request, response) => {
         response.status(400);
         throw new Error('All fields are mandatory');
     }
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            response.status(401);
-            throw new Error('Email or password not correct');
-        }
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (passwordMatch) {
-            const accessToken = jwt.sign({
-                user: {
-                    username: user.username,
-                    email: user.email,
-                    id: user.id,
-                }
-            }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
-            response.status(200).json({ accessToken });
-        } else {
-            response.status(401);
-            throw new Error('Email or password not correct');
-        }
-    } catch (error) {
-        console.error(error);
-        response.status(500).json({ error: 'Server Error' });
+    const user = User.findOne({ email });
+    if (user && bcrypt.compare(password, user.password)) {
+        const accessToken = jwt.sign({
+            user: {
+                username: user.username,
+                email: user.email,
+                id: user.id,
+            }
+        }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' });
+        response.status(200).json({ accessToken });
     }
+    await response.json({ message: 'Login the user' });
 }
 
 // @desc Current status of user
 // @route CURRENT api/users/current
 // @access private
 const currentUser = async (request, response) => {
-    response.json(request.user);
+    response.json({ message: 'Your status is this' });
 }
 
 module.exports = {
     registerUser,
     loginUser,
     currentUser
-};
+}
