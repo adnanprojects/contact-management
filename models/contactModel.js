@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const contactSchema = mongoose.Schema({
-    user_id: {
+    user_id: { //for private session
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
