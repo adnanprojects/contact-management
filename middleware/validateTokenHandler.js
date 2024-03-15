@@ -5,7 +5,6 @@ const validateToken = async (request, response, next) => {
     let authHeader = request.header.Authorization || request.header.authorization;
     if (authHeader && authHeader.starsWith('Bearer')) {
         token = authHeader.split(' ')[1];
-        console.log(token);
         jwt.verify(token, ACCESS_TOKEN_SECRET, (error, decoded) => {
             if (error) {
                 response.status(401);
